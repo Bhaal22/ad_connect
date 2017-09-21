@@ -43,19 +43,21 @@ namespace ad_connect
                 string domainAndUsername = userdomain + @"\" + username;
                 DirectoryEntry entry = new DirectoryEntry("LDAP://" + delegatedDomain, domainAndUsername, password);
 
-                DirectorySearcher search = new DirectorySearcher(entry);
-
-                search.Filter = "(CN=" + group + ")";
-
-                SearchResult result = search.FindOne();
-                int propertyCount = result.Properties["member"].Count;
-
                 PrincipalContext context = new PrincipalContext(ContextType.Domain, userdomain);
                 UserPrincipal user = UserPrincipal.FindByIdentity(context, username);
 
                 var sid = user.Sid;
                 var displayName = user.DisplayName;
                 var userName = user.Name;
+
+                Console.WriteLine($"User Principal properties: sid={sid} displayName={displayName} userName={userName}");
+
+                DirectorySearcher search = new DirectorySearcher(entry);
+
+                search.Filter = "(CN=" + group + ")";
+
+                SearchResult result = search.FindOne();
+                int propertyCount = result.Properties["member"].Count;
 
                 for (int propertyCounter = 0; propertyCounter < propertyCount; propertyCounter++)
                 {
